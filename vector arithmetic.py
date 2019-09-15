@@ -82,7 +82,8 @@ def find_and_save_nearest_neighbors(vector, k, indices, save_name):
     df.to_csv(save_name)
 
 
-indices = pd.read_csv('test.csv')
+# indices = pd.read_csv('test.csv')
+
 
 def do_arithmetic_list(test, indices, name):
     queries = [example for example in test]
@@ -99,6 +100,28 @@ def do_arithmetic_list(test, indices, name):
 
 
 do_arithmetic_list(typo_correction_tests, indices, 'typo')
+
+
+def find_similarity_of_expected(test, expected, name):
+    queries = [example for example in test]
+    headers = {
+        'Ocp-Apim-Subscription-Key': sys.argv[1],
+    }
+    rows = list()
+    for i, example in enumerate(queries):
+        response = requests.post('https://api.msturing.org/gen/encode',
+                                 headers=headers,
+                                 data=create_query_line([example, expected[i]]))
+        data = json.loads(response.text)
+        new_vector = np.asarray(data[0]['vector']) - np.asarray(data[1]['vector']) + np.asarray(data[2]['vector'])
+        expected = np.asarray(data[3]['vector'])
+        similarity = cosine_similarity(new_vector, expected)
+        rows.append([name + '_' + str(i), expected[i], similarity])
+    df = pd.DataFrame(rows)
+    df.to_csv(name + '.csv')
+
+
+find_similarity_of_expected(syntactic_tests, syntactic_expected_results, 'syntactic')
 
 # compare_in_classes(syntactic_tests, syntactic_expected_results, 'syntactic_tests.csv')
 
