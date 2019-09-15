@@ -5,9 +5,13 @@ f = 100
 t = AnnoyIndex(f, 'angular')  # Length of item vector that will be indexed
 
 query_df = pd.read_csv("test.csv")
+num_rows = query_df.shape[0]
+print(query_df.shape)
 
-for index, row in df.iterrows():
-    t.add_item(index, row["vector"])
+for index, row in query_df.iterrows():
+    if index % 10000 == 0:
+        print('Currently at {} of {}'.format(index, num_rows))
+    t.add_item(index, [float(s) for s in row["vector"][1:-1].split(',')])
 
 t.build(10) # 10 trees
 t.save('test.ann')
