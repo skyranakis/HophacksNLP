@@ -27,7 +27,6 @@ def compare_in_classes(labels, queries, save):
                              headers=headers,
                              data=create_query_line(queries))
     data = json.loads(response.text)
-    print(data)
     vector_dict = {}
     for i in range(len(labels)):
         vector_dict[labels[i]] = data[i]['vector']
