@@ -39,6 +39,7 @@ def create_query_line(queries):
 def cosine_similarity(a, b):
     return np.dot(a, b) / (np.sqrt(np.sum(np.square(a))) * np.sqrt(np.sum(np.square(b))))
 
+
 def compare_in_classes(queries, queries_expected_results, save):
     similarity = np.zeros((len(queries), 2))
     headers = {
@@ -61,14 +62,33 @@ def compare_in_classes(queries, queries_expected_results, save):
 
     df = pd.DataFrame(similarity)
     df.columns = labels
-    df.rows = labels
 
     df.to_csv(save)
 
 
+def find_and_save_nearest_neighbors(vector, k, indices, save_name):
+    u = AnnoyIndex(100, 'angular')
+    u.load('test.ann')
+    near_indices = u.get_nns_by_item(vector, k)
+    near_queries = [indices[index]['query'] for index in near_indices]
+    df = pd.DataFrame(near_queries)
+    df.to_csv(save_name)
 
-compare_in_classes(syntactic_tests, syntactic_expected_results, 'syntactic_tests.csv')
+
+queries = ['how tall is the empire state building?']
+headers = {
+    'Ocp-Apim-Subscription-Key': sys.argv[1],
+}
+response = requests.post('https://api.msturing.org/gen/encode',
+                         headers=headers,
+                         data=create_query_line(queries))
+data = json.loads(response.text)
+indices = pd.read_csv('test.csv')
+find_and_save_nearest_neighbors(data['vector'], 10, indices, 'test_nn.csv')
 
 
-u = AnnoyIndex(f, 'angular')
-u.load('test.ann')
+# compare_in_classes(syntactic_tests, syntactic_expected_results, 'syntactic_tests.csv')
+
+
+# u = AnnoyIndex(f, 'angular')
+# u.load('test.ann')
