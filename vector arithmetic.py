@@ -76,11 +76,12 @@ def find_and_save_nearest_neighbors(vector, k, indices, save_name):
     u.load('test.ann')
     near_indices = u.get_nns_by_vector(vector, k)
     near_queries = [indices.iloc[index]['query'] for index in near_indices]
-    df = pd.DataFrame(near_queries)
+    near_vectors = [[float(num) for num in indices.iloc[index]['vector'][1:-1].split(', ')] for index in near_indices]
+    df = pd.DataFrame([near_queries, near_vectors])
     df.to_csv(save_name)
 
 
-queries = syntactic_tests[1]
+queries = syntactic_tests[0]
 headers = {
     'Ocp-Apim-Subscription-Key': sys.argv[1],
 }
