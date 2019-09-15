@@ -77,22 +77,28 @@ def find_and_save_nearest_neighbors(vector, k, indices, save_name):
     near_indices = u.get_nns_by_vector(vector, k)
     near_queries = [indices.iloc[index]['query'] for index in near_indices]
     near_vectors = [[float(num) for num in indices.iloc[index]['vector'][1:-1].split(', ')] for index in near_indices]
-    df = pd.DataFrame([near_queries, near_vectors])
+    near_similarities = [cosine_similarity(vec, vector) for vec in near_vectors]
+    df = pd.DataFrame([near_queries, near_similarities])
     df.to_csv(save_name)
 
 
-queries = syntactic_tests[0]
-headers = {
-    'Ocp-Apim-Subscription-Key': sys.argv[1],
-}
-response = requests.post('https://api.msturing.org/gen/encode',
-                         headers=headers,
-                         data=create_query_line(queries))
-data = json.loads(response.text)
 indices = pd.read_csv('test.csv')
-new_vector = np.asarray(data[0]['vector']) - np.asarray(data[1]['vector']) + np.asarray(data[2]['vector'])
-find_and_save_nearest_neighbors(new_vector, 10, indices, 'tom_cruise_age.csv')
 
+def do_arithmetic_list(test, indices, name):
+    queries = [example for example in test]
+    headers = {
+        'Ocp-Apim-Subscription-Key': sys.argv[1],
+    }
+    for i, example in enumerate(queries):
+        response = requests.post('https://api.msturing.org/gen/encode',
+                                 headers=headers,
+                                 data=create_query_line(example))
+        data = json.loads(response.text)
+        new_vector = np.asarray(data[0]['vector']) - np.asarray(data[1]['vector']) + np.asarray(data[2]['vector'])
+        find_and_save_nearest_neighbors(new_vector, 10, indices, name + '_'+ str(i) + '.csv')
+
+
+do_arithmetic_list(typo_correction_tests, indices, 'typo')
 
 # compare_in_classes(syntactic_tests, syntactic_expected_results, 'syntactic_tests.csv')
 
