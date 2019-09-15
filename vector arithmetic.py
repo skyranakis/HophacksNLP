@@ -1,4 +1,9 @@
 from annoy import AnnoyIndex
+import sys
+import requests
+import json
+import pandas as pd
+import numpy as np
 
 syntactic_tests = [['how tall is tom cruise?', 'tom cruise height', 'brad pitt height'],
                    ['tom cruise height', 'brad pitt height', 'brad pitt age'],
@@ -69,13 +74,13 @@ def compare_in_classes(queries, queries_expected_results, save):
 def find_and_save_nearest_neighbors(vector, k, indices, save_name):
     u = AnnoyIndex(100, 'angular')
     u.load('test.ann')
-    near_indices = u.get_nns_by_item(vector, k)
-    near_queries = [indices[index]['query'] for index in near_indices]
+    near_indices = u.get_nns_by_vector(vector, k)
+    near_queries = [indices.iloc[index]['query'] for index in near_indices]
     df = pd.DataFrame(near_queries)
     df.to_csv(save_name)
 
 
-queries = ['how tall is the empire state building?']
+queries = syntactic_tests[1]
 headers = {
     'Ocp-Apim-Subscription-Key': sys.argv[1],
 }
@@ -84,7 +89,8 @@ response = requests.post('https://api.msturing.org/gen/encode',
                          data=create_query_line(queries))
 data = json.loads(response.text)
 indices = pd.read_csv('test.csv')
-find_and_save_nearest_neighbors(data['vector'], 10, indices, 'test_nn.csv')
+new_vector = np.asarray(data[0]['vector']) - np.asarray(data[1]['vector']) + np.asarray(data[2]['vector'])
+find_and_save_nearest_neighbors(new_vector, 10, indices, 'tom_cruise_age.csv')
 
 
 # compare_in_classes(syntactic_tests, syntactic_expected_results, 'syntactic_tests.csv')
