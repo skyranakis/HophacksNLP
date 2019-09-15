@@ -1,3 +1,5 @@
+from annoy import AnnoyIndex
+
 syntactic_tests = [['how tall is tom cruise?', 'tom cruise height', 'brad pitt height'],
                    ['tom cruise height', 'brad pitt height', 'brad pitt age'],
                    ['how many computers are there in the world?', 'how much does a computer weigh?',
@@ -22,3 +24,56 @@ typo_correction_tests = [['how big is a baseball field', 'how big is a baseball 
 expected_typo_correction_results = ['star of field of dreams',
                                     'cat with string',
                                     'how healthy is tea']
+
+
+def create_query_line(queries):
+    line = '{"queries": ["'
+    for i, query in enumerate(queries[:-1]):
+        line += query
+        line += '", "'
+    line += queries[-1]
+    line += '"]}'
+    return line
+
+
+def cosine_similarity(a, b):
+    return np.dot(a, b) / (np.sqrt(np.sum(np.square(a))) * np.sqrt(np.sum(np.square(b))))
+
+def compare_in_classes(queries, queries_expected_results, save):
+
+
+    similarity = np.zeros((len(queries), 2))
+    headers = {
+        'Ocp-Apim-Subscription-Key': sys.argv[1],
+    }
+    for i, query in enumerate(queries):
+        response = requests.post('https://api.msturing.org/gen/encode',
+                                headers=headers,
+                                data=create_query_line(queries))
+        data = json.loads(response.text)
+        similarity[i][0] = data[0]['vector']
+        similarity[i][0] -= data[1]['vector']
+        similarity[i][0] += data[2]['vector']
+
+    response = requests.post('https://api.msturing.org/gen/encode',
+                            headers=headers,
+                            data=create_query_line(queries))
+    data = json.loads(response.text)
+
+    for i, row in enumerate(data)
+        similarity[i][1] = row[0]['vector']
+
+
+    df = pd.DataFrame(similarity)
+    df.columns = labels
+    df.rows = labels
+
+    df.to_csv(save)
+
+
+
+compare_in_classes(syntactic_tests, syntactic_expected_results, 'syntactic_tests.csv')
+
+
+u = AnnoyIndex(f, 'angular')
+u.load('test.ann')
