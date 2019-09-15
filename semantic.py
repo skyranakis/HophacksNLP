@@ -39,7 +39,6 @@ def compare_in_classes(labels, queries, save):
 
     df = pd.DataFrame(similarity)
     df.columns = labels
-    df.rows = labels
 
     df.to_csv(save)
 
@@ -62,7 +61,8 @@ scott = ['alien', 'blade runner', 'gladiator', 'black hawk down', 'the martian']
 movies_by_director = nolan + tarantino + scorsese + spielberg + kubrik + wright + hitchcock + scott
 movies_by_director_queries = ["who directed {}?".format(movie) for movie in movies_by_director]
 
-compare_in_classes(movies_by_director, movies_by_director_queries, 'movies_by_director.csv')
+# compare_in_classes(movies_by_director, movies_by_director_queries, 'movies_by_director.csv')
+
 
 m_2010 = ['inception', 'the social network', 'iron man 2', 'the king\'s speech',
           'scott pilgrim vs. the world', 'shutter island', 'black swan', 'the fighter']
@@ -86,4 +86,28 @@ m_2018 = ['black panther', 'avengers: infinity war', 'a star is born', 'spider-m
 movies_by_year = m_2010 + m_2011 + m_2012 + m_2013 + m_2014 + m_2015 + m_2016 + m_2017 + m_2018
 movies_by_year_queries = ["when was {} released?".format(movie) for movie in movies_by_year]
 
-compare_in_classes(movies_by_year, movies_by_year_queries, 'movies_by_year.csv')
+# compare_in_classes(movies_by_year, movies_by_year_queries, 'movies_by_year.csv')
+
+
+america = ['new york', 'los angeles', 'chicago', 'dallas', 'seattle', 'boston']
+france = ['paris', 'bordeauz', 'marseilles', 'nice', 'lyon']
+china = ['beijing', 'shanghai', 'shenzhen', 'chengdu', 'tianjin', 'hangzhou', 'nanjing']
+england = ['london', 'manchester', 'york', 'liverpool', 'bristol', 'nottingham', 'birmingham']
+india = ['new dehli', 'mumbai', 'bengaluru', 'chennai', 'hyderabad', 'kolkata']
+
+cities = america + france + china + england + india
+cities_queries = ['what country is {} in?'.format(city) for city in cities]
+
+# compare_in_classes(cities, cities_queries, 'cities.csv')
+
+
+germany = ['berlin', 'munich', 'hamburg', 'frankfurt', 'cologne', 'nuremberg']
+russia = ['moscow', 'saint petersburg', 'kazan', 'yekaterinaburg', 'volgograd', 'sochi']
+canada = ['vancouver', 'montreal', 'calgary', 'ottawa', 'toronto', 'edmonton']
+brazil = ['rio de janeiro', 'sao paulo', 'manaus', 'porto alegre', 'salvador', 'brasilia']
+south_africa = ['cape town', 'johannesburg', 'durban', 'pretoria', 'port elizabeth']
+
+cities_2 = cities + germany + russia + canada + brazil + south_africa
+cities_2_queries = ['what country is {} in?'.format(city) for city in cities_2]
+
+compare_in_classes(cities_2, cities_2_queries, 'cities_2.csv')

@@ -40,8 +40,6 @@ def cosine_similarity(a, b):
     return np.dot(a, b) / (np.sqrt(np.sum(np.square(a))) * np.sqrt(np.sum(np.square(b))))
 
 def compare_in_classes(queries, queries_expected_results, save):
-
-
     similarity = np.zeros((len(queries), 2))
     headers = {
         'Ocp-Apim-Subscription-Key': sys.argv[1],
@@ -51,18 +49,15 @@ def compare_in_classes(queries, queries_expected_results, save):
                                 headers=headers,
                                 data=create_query_line(queries))
         data = json.loads(response.text)
-        similarity[i][0] = data[0]['vector']
-        similarity[i][0] -= data[1]['vector']
-        similarity[i][0] += data[2]['vector']
+        similarity[i][0] = data[0]['vector'] - data[1]['vector'] + data[2]['vector']
 
     response = requests.post('https://api.msturing.org/gen/encode',
                             headers=headers,
                             data=create_query_line(queries))
     data = json.loads(response.text)
 
-    for i, row in enumerate(data)
+    for i, row in enumerate(data):
         similarity[i][1] = row[0]['vector']
-
 
     df = pd.DataFrame(similarity)
     df.columns = labels
