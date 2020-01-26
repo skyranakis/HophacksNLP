@@ -24,7 +24,7 @@ def create_query_line(queries):
 
 
 headers = {
-    'Ocp-Apim-Subscription-Key': '',
+    'Ocp-Apim-Subscription-Key': sys.argv[1],
 }
 response = requests.post('https://api.msturing.org/gen/encode',
                          headers=headers,
